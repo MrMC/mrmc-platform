@@ -1,0 +1,30 @@
+# - mrmcplatform config mode
+#
+# Defines the following variables:
+#  mrmcplatform_FOUND        - true
+#  mrmcplatform_VERSION      - version of the mrmcplatform library found, e.g. 0.2
+#  mrmcplatform_INCLUDE_DIRS - header directories with which to compile
+#  mrmcplatform_LINKER_FLAGS - flags that must be passed to the linker
+#  mrmcplatform_LIBRARIES    - names of the libraries with which to link
+#  mrmcplatform_LIBRARY_DIRS - directories in which the libraries are situated
+#
+# propagate these properties from one build system to the other
+set (mrmcplatform_VERSION "@mrmcplatform_VERSION_MAJOR@.@mrmcplatform_VERSION_MINOR@")
+set (mrmcplatform_INCLUDE_DIRS @mrmcplatform_INCLUDE_DIRS@ @CMAKE_INSTALL_PREFIX@/include)
+set (mrmcplatform_LIBRARY_DIRS "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@")
+set (mrmcplatform_LINKER_FLAGS "@mrmcplatform_LINKER_FLAGS@")
+set (mrmcplatform_CONFIG_VARS "@mrmcplatform_CONFIG_VARS@")
+
+# libraries come from the build tree where this file was generated
+if(WIN32)
+  set (mrmcplatform_LIBRARY "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@/mrmcplatform.lib")
+else(WIN32)
+  set (mrmcplatform_LIBRARY "-L@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@ -lmrmcplatform")
+endif(WIN32)
+set (mrmcplatform_LIBRARIES ${mrmcplatform_LIBRARY} "@mrmcplatform_LIBRARIES@")
+mark_as_advanced (mrmcplatform_LIBRARY)
+
+# add the library as a target, so that other things in the project including
+# this file may depend on it and get rebuild if this library changes.
+add_library (mrmcplatform UNKNOWN IMPORTED)
+set_property (TARGET mrmcplatform PROPERTY IMPORTED_LOCATION "${mrmcplatform_LIBRARY}")
